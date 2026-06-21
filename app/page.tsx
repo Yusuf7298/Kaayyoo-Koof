@@ -13,6 +13,7 @@ import ContactSection from '@/components/contact-section'
 import { BannerCarousel } from '@/components/banner-carousel'
 import WhatMembersSay from '@/components/what-members-say'
 import { UpcomingEventsSection } from '@/components/upcoming-events'
+import Typewriter from '@/components/typewriter'
 import { fallbackEvents } from '@/lib/events'
 
 export const dynamic = 'force-dynamic'
@@ -112,7 +113,9 @@ export default async function HomePage() {
           <div className="max-w-6xl mx-auto px-4 py-20 text-center relative z-10">
             <div className="animate-fade-in-up mb-6">
               <div className="inline-flex items-center gap-3 mb-8 bg-white/50 backdrop-blur rounded-full px-6 py-3">
-                <span className="text-foreground font-semibold">Welcome to Kaayyoo Koof Association</span>
+                <span className="text-foreground font-semibold">
+                  <Typewriter text="Welcome to Kaayyoo Koof" speed={50} delay={300} />
+                </span>
               </div>
             </div>
             <h1 className="text-6xl md:text-7xl font-bold text-foreground mb-6 animate-fade-in-up stagger-1 text-balance">

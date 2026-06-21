@@ -1,83 +1,30 @@
 import Link from 'next/link'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
 import { EventCard } from '@/components/event-card'
 import { fallbackEvents } from '@/lib/events'
 
 export const dynamic = 'force-dynamic'
 
-// Static fallback events — shown when DB is not yet set up
-const STATIC_EVENTS = [
-  {
-    id: 1,
-    title: 'Summer Camp 2026',
-    description:'An immersive multi-day outdoor camp designed to build resilience, teamwork, and leadership in young community members through hands-on activities, workshops, and nature challenges.',
-    image: '/comm/kayy1.jpg',
-    date: new Date('2026-07-06'),
-    time: '8:00 AM – 5:00 PM',
-    location: 'Kaayyoo Koof Tranning Center(Abosto, Bekera R-429) ',
-    maxAttendees: 80,
-    currentAttendees: 62,
-    tag: 'Summery Camp',
-  },
- {
-  id: 2,
-  title: 'Wada ',
-  description: 'A structured Wada Cup program pairing experienced professionals with young, aspiring leaders. Gain guidance, build networks, and fast-track your personal and career growth.',
-  image: '/comm/kayy2.jpg',
-  date: 'Ongoing',
-  time: '10:00 AM – 12:00 PM',
-  location: 'Kaayyoo Koof Training Center (Abosto, Bekera R-429)',
-  maxAttendees: 50,
-  currentAttendees: 27,
-  tag: 'Networking Young',
-},
-  {
-    id: 3,
-    title: 'Live Sessions',
-    description:'Monthly live interactive sessions featuring guest speakers, open Q&A panels, skill-building workshops, and community discussions on topics that matter most to our members.',
-    image: '/comm/kayy3.jpg',
-    date: new Date('2026-07-08'),
-    time: '9:00 PM – 10:30 PM',
-    location: 'Online & Community Center',
-    maxAttendees: 150,
-    currentAttendees: 89,
-    tag: 'Telegram Live',
-  },
-]
-
 export default async function EventsPage() {
-  let isLoggedIn = false
   let dbEvents: any[] = []
-
-  try {
-    const session = await auth.api.getSession({ headers: await headers() })
-    isLoggedIn = !!session?.user
-  } catch {
-    // auth not critical for public events page
-  }
 
   try {
     const { getUpcomingEvents } = await import('@/app/actions/members')
     dbEvents = await getUpcomingEvents()
   } catch {
-    // DB not ready — fall back to static events below
+    // DB not ready — fall back to static events
   }
 
-  // Merge:Cup prefer DB events if available, else show static
   const events = dbEvents.length > 0
     ? dbEvents.map((e) => ({
       id: e.id,
       title: e.title,
       description: e.description ?? '',
-      image: e.event_image ?? '/kayyoo1.jpg',
+      image: e.event_image ?? '/comm/kayy1.jpg',
       date: e.event_date,
-      time: e.event_date
-        ? new Date(e.event_date).toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-        : 'TBD',
+      time: new Date(e.event_date).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
       location: e.location ?? 'TBD',
       maxAttendees: e.max_attendees ?? 100,
       currentAttendees: e.current_attendees ?? 0,

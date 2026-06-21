@@ -31,13 +31,15 @@ export function EventCard({
   tag,
   delay = 0,
 }: EventCardProps) {
-  const eventDate = new Date(date)
-  const day = eventDate.toLocaleDateString('en-US', { weekday: 'long' })
-  const formattedDate = eventDate.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  // Handle plain strings like "Ongoing", "Coming Soon", "Weekly Sunday Night"
+  const isStringDate = typeof date === 'string' && isNaN(Date.parse(date))
+  const eventDate = isStringDate ? null : new Date(date)
+  const day = eventDate
+    ? eventDate.toLocaleDateString('en-US', { weekday: 'long' })
+    : (date as string)
+  const formattedDate = eventDate
+    ? eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : (date as string)
   const spotsLeft = maxAttendees - currentAttendees
   const fillPct = Math.min((currentAttendees / maxAttendees) * 100, 100)
   const almostFull = spotsLeft <= maxAttendees * 0.2

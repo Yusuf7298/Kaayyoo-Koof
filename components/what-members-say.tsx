@@ -17,7 +17,7 @@ const memberMessages: MemberMessage[] = [
   {
     id: 1,
     name: 'Akeka Mohammed',
-    role: 'Youth Volunteer | Active Members',
+    role: 'Youth Volunteer | Active Members | Board Members',
     message: 'Kayyoo Koof changed my perspective on community involvement. I came in with just an idea, but the support and mentorship I received helped me launch a successful community initiative. Now I mentor other youth members!',
     rating: 5,
     image: '/members/Akeka.jpg',
@@ -26,7 +26,7 @@ const memberMessages: MemberMessage[] = [
   {
     id: 2,
     name: 'Duressa Shigido',
-    role: 'Active Member & Coordinator',
+    role: 'Youth Voulnter | Active Member | Coordinator',
     message: 'What impressed me most is the genuine care and commitment. Every member genuinely wants to see each other succeed. The networking opportunities and skill-sharing sessions have been invaluable for my personal and professional growth.',
     rating: 5,
     image: '/members/Duressa.jpg',
@@ -35,7 +35,7 @@ const memberMessages: MemberMessage[] = [
   {
     id: 3,
     name: 'Yusuf Mohammed',
-    role: 'Student Member',
+    role: 'Youth Voulnter |Active Members',
     message: 'As a student, I was overwhelmed with life decisions. Kayyoo Koof provided guidance, network opportunities, and a supportive network. The leadership programs prepared me for real-world challenges. Highly recommend!',
     rating: 5,
     image: '/members/Yusuf.png',

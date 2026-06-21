@@ -111,7 +111,7 @@ export default function Footer() {
               <p>
                 <span className="opacity-75">Telegram:</span><br />
                 <a href="https://t.me/kaayyoo_koof" className="hover:text-primary transition">
-                  @kaayyoo_koof
+                  Kaayyoo Koof
                 </a>
               </p>
 
@@ -156,7 +156,7 @@ export default function Footer() {
           <div className="flex gap-4">
             <a href="#" className="hover:text-primary transition">Privacy</a>
             <a href="#" className="hover:text-primary transition">Terms</a>
-            <a href="#" className="hover:text-primary transition">Sitemap</a>
+            <a href="https://maps.app.goo.gl/3bH6xDUXhJQDSRYN7" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">Site Map</a>
           </div>
         </div>
       </div>
