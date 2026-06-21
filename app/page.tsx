@@ -1,9 +1,7 @@
 import Link from 'next/link'
 import { headers } from 'next/headers'
-import { StatCounter } from '@/components/stat-counter'
-import { EventCard } from '@/components/event-card'
-import { TestimonialCard } from '@/components/testimonial-card'
 import { GalleryGrid } from '@/components/gallery-grid'
+import { StatCounter } from '@/components/stat-counter'
 import HomeClient from '@/components/home-client'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
@@ -13,6 +11,8 @@ import ImpactSection from '@/components/impact-section'
 import MembershipSection from '@/components/membership-section'
 import ContactSection from '@/components/contact-section'
 import { BannerCarousel } from '@/components/banner-carousel'
+import WhatMembersSay from '@/components/what-members-say'
+import { UpcomingEventsSection } from '@/components/upcoming-events'
 import { fallbackEvents } from '@/lib/events'
 
 export const dynamic = 'force-dynamic'
@@ -196,65 +196,13 @@ export default async function HomePage() {
         <AchievementsSection />
         <ImpactSection />
 
-        {/* Events */}
-        <section id="events" className="py-20 bg-background">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-16 animate-fade-in-up">
-              <h2 className="text-4xl font-bold text-foreground mb-4">Upcoming Events</h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Join our community events and be part of something meaningful
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {fallbackEvents.map((event, index) => {
-                const { id, ...rest } = event
-                return (
-                  <EventCard
-                    key={id}
-                    id={id}
-                    {...rest}
-                    delay={index * 120}
-                  />
-                )
-              })}
-            </div>
-            <div className="text-center">
-              <Link
-                href="/events"
-                className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition font-semibold"
-              >
-                View All Events →
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Upcoming Events — real events with local images */}
+        <UpcomingEventsSection />
 
         <MembershipSection />
 
-        {/* Testimonials */}
-        <section className="py-20 bg-muted">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-16 animate-fade-in-up">
-              <h2 className="text-4xl font-bold text-foreground mb-4">What Members Say</h2>
-              <p className="text-xl text-muted-foreground">
-                Hear from members who have transformed their lives through Kaayyoo Koof
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((t, index) => (
-                <div key={index}>
-                  <TestimonialCard
-                    name={t.name}
-                    role={t.role}
-                    image={t.image}
-                    quote={t.content}
-                    delay={index * 100}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* What Members Say — real member testimonials */}
+        <WhatMembersSay />
 
         {/* Join Today CTA */}
         <section className="relative py-28 overflow-hidden bg-foreground text-background">

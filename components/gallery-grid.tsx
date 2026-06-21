@@ -24,7 +24,7 @@ export function GalleryGrid({ items }: GalleryGridProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item, index) => (
           <div
-            key={item.id}
+            key={`gallery-${index}`}
             onClick={() => setSelectedId(item.id)}
             className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group hover-scale animate-fade-in-up"
             style={{ animationDelay: `${index * 100}ms` }}

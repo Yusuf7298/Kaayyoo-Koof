@@ -128,7 +128,7 @@ export default function Footer() {
                       rel="noopener noreferrer"
                       aria-label={s.name}
                       title={s.name}
-                      className={`w-11 h-11 rounded-xl border border-secondary-foreground/20 bg-secondary-foreground/5 text-secondary-foreground hover:text-white flex items-center justify-center transition-all duration-300 ${s.color}`}
+                      className={`w-8 h-8 rounded-xl border border-secondary-foreground/20 bg-secondary-foreground/5 text-secondary-foreground hover:text-white flex items-center justify-center transition-all duration-300 ${s.color}`}
                     >
                       {s.icon}
                     </a>

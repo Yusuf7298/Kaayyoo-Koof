@@ -16,12 +16,12 @@ interface MemberMessage {
 const memberMessages: MemberMessage[] = [
   {
     id: 1,
-    name: 'Yusuf Mohammed',
+    name: 'Akeka Mohammed',
     role: 'Youth Volunteer | Active Members',
     message: 'Kayyoo Koof changed my perspective on community involvement. I came in with just an idea, but the support and mentorship I received helped me launch a successful community initiative. Now I mentor other youth members!',
     rating: 5,
-    image: '/we/kayyoo3.jpg',
-    joinDate: 'Joined 18 months ago',
+    image: '/members/Akeka.jpg',
+    joinDate: 'Joined 4 years ago',
   },
   {
     id: 2,
@@ -29,16 +29,16 @@ const memberMessages: MemberMessage[] = [
     role: 'Active Member & Coordinator',
     message: 'What impressed me most is the genuine care and commitment. Every member genuinely wants to see each other succeed. The networking opportunities and skill-sharing sessions have been invaluable for my personal and professional growth.',
     rating: 5,
-    image: '/we/kayyoo2.jpg',
+    image: '/members/Duressa.jpg',
     joinDate: 'Joined 2 years ago',
   },
   {
     id: 3,
-    name: 'Hikma Denbel',
+    name: 'Yusuf Mohammed',
     role: 'Student Member',
-    message: 'As a student, I was overwhelmed with life decisions. Kayyoo Koof provided guidance, internship opportunities, and a supportive network. The leadership programs prepared me for real-world challenges. Highly recommend!',
+    message: 'As a student, I was overwhelmed with life decisions. Kayyoo Koof provided guidance, network opportunities, and a supportive network. The leadership programs prepared me for real-world challenges. Highly recommend!',
     rating: 5,
-    image: '/we/kayyoo5.jpg',
+    image: '/members/Yusuf.png',
     joinDate: 'Joined 1 year ago',
   },
 ]

@@ -11,8 +11,7 @@ const STATIC_EVENTS = [
   {
     id: 1,
     title: 'Summer Camp 2026',
-    description:
-      'An immersive multi-day outdoor camp designed to build resilience, teamwork, and leadership in young community members through hands-on activities, workshops, and nature challenges.',
+    description:'An immersive multi-day outdoor camp designed to build resilience, teamwork, and leadership in young community members through hands-on activities, workshops, and nature challenges.',
     image: '/comm/kayy1.jpg',
     date: new Date('2026-07-06'),
     time: '8:00 AM – 5:00 PM',
@@ -23,7 +22,7 @@ const STATIC_EVENTS = [
   },
  {
   id: 2,
-  title: 'Wada Cup',
+  title: 'Wada ',
   description: 'A structured Wada Cup program pairing experienced professionals with young, aspiring leaders. Gain guidance, build networks, and fast-track your personal and career growth.',
   image: '/comm/kayy2.jpg',
   date: 'Ongoing',
@@ -65,7 +64,7 @@ export default async function EventsPage() {
     // DB not ready — fall back to static events below
   }
 
-  // Merge: prefer DB events if available, else show static
+  // Merge:Cup prefer DB events if available, else show static
   const events = dbEvents.length > 0
     ? dbEvents.map((e) => ({
       id: e.id,
