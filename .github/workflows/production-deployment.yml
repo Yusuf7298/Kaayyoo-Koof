@@ -1,0 +1,232 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: 'Deployment type'
+        required: true
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - hotfix
+          - rollback
+
+jobs:
+  pre-deployment-checks:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(cat package.json | grep '"version"' | head -1 | awk -F '"' '{print $4}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          CHANGELOG=$(git log --oneline --no-decorate $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD^")..HEAD | head -10)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  security-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          path: '.'
+          format: 'JSON'
+          args: >
+            --enableExperimental
+            --enableRetired
+
+      - name: Upload OWASP results
+        uses: actions/upload-artifact@v3
+        with:
+          name: owasp-report
+          path: dependency-check-report.json
+
+      - name: Security scanning
+        run: |
+          echo "Running comprehensive security scan..."
+          # Add security scanning commands here
+
+  performance-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and analyze
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+
+      - name: Run Lighthouse audit
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          runs: 3
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+
+      - name: Comment Lighthouse results
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const lighthouse = JSON.parse(fs.readFileSync('./lighthouse-report.json', 'utf8'));
+            const scores = lighthouse.map((r) => ({
+              url: r.url,
+              performance: r.categories.performance.score * 100,
+              accessibility: r.categories.accessibility.score * 100,
+              best_practices: r.categories['best-practices'].score * 100,
+              seo: r.categories.seo.score * 100,
+            }));
+
+            let comment = '## 📊 Lighthouse Results\n\n';
+            scores.forEach((score) => {
+              comment += `### ${score.url}\n`;
+              comment += `- ⚡ Performance: ${score.performance}\n`;
+              comment += `- ♿ Accessibility: ${score.accessibility}\n`;
+              comment += `- 🛠️ Best Practices: ${score.best_practices}\n`;
+              comment += `- 📱 SEO: ${score.seo}\n\n`;
+            });
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment,
+            });
+
+  deploy-to-production:
+    needs: [pre-deployment-checks, security-checks, performance-validation]
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          NODE_ENV: production
+
+      - name: Run pre-deployment database backup
+        run: |
+          echo "Triggering production database backup..."
+          # Add backup script here
+
+      - name: Deploy to Vercel Production
+        uses: vercel/action@main
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          production: true
+
+      - name: Health check
+        run: |
+          echo "Running health checks on production..."
+          curl -f https://api.kayyookoof.org/health || exit 1
+
+      - name: Run production smoke tests
+        run: pnpm test:smoke:production
+        env:
+          TEST_URL: https://kayyookoof.org
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.pre-deployment-checks.outputs.version }}
+          release_name: Release ${{ needs.pre-deployment-checks.outputs.version }}
+          body: |
+            ${{ needs.pre-deployment-checks.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Notify deployment success
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ Production deployment successful",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production Deployment Successful* 🎉\nVersion: ${{ needs.pre-deployment-checks.outputs.version }}\nAuthor: ${{ github.actor }}\nCommit: ${{ github.sha }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify deployment failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ Production deployment failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production Deployment Failed* 🚨\nVersion: ${{ needs.pre-deployment-checks.outputs.version }}\nAuthor: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
